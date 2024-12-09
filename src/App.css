@@ -1,0 +1,61 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.App {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 10px 0;
+  background-color: #121212;
+  direction: rtl;
+}
+
+@font-face {
+  font-family: Alexandria;
+  src: url(/public/fonts/Alexandria-Regular.ttf);
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: Alexandria;
+  src: url(/public/fonts/Alexandria-Bold.ttf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: Alexandria;
+  src: url(/public/fonts/Alexandria-Black.ttf);
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: Alexandria;
+  src: url(/public/fonts/Alexandria-Light.ttf);
+  font-weight: 200;
+}
+@font-face {
+  font-family: Alexandria;
+  src: url(/public/fonts/Alexandria-Medium.ttf);
+  font-weight: 500;
+}
+
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e0f2f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00695c;
+  border-radius: 10px;
+}
+
