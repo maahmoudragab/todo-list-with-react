@@ -1,263 +1,194 @@
-// From MUI
-import { Divider, Grid, TextField } from "@mui/material";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-// Dialog Model
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+// Import MUI Components
+import {
+  Stack,
+  CardContent,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+} from "@mui/material";
 
-// Icons
-import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
-import ModeEditTwoToneIcon from "@mui/icons-material/ModeEditTwoTone";
-import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+// MUI Icons:
+import PlaylistAddRoundedIcon from "@mui/icons-material/PlaylistAddRounded";
+import PlaylistRemoveRoundedIcon from "@mui/icons-material/PlaylistRemoveRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
+import CheckRounded from "@mui/icons-material/CheckRounded";
+import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
 
-// Hooks
-import { useContext, useState } from "react";
-
-// Context
-import { TodosContext } from "./contexts/todosContext";
-
-// Theme
+// Import Theme Hook
 import { useTheme } from "@mui/material/styles";
 
+// Import React Hooks
+import { useState } from "react";
 
+// Import Contexts
+import { useDispatch, useCategories } from "../contexts/todosContext";
+import { useSnackbar } from "../contexts/snackbarContext";
 
-export default function Todo({ todo }) {
-  const theme = useTheme()
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const [editTodo, setEditTodo] = useState({
-    title: todo.title,
-    details: todo.details,
-  });
-  const { todos, setTodos } = useContext(TodosContext);
+export default function Todo({ todo, showDelete, showEdit }) {
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const categories = useCategories();
+  const { showHideSnackbar } = useSnackbar();
 
-  const handleCheckClick = () => {
-    const updateTodo = todos.map((t) => {
-      if (t.id === todo.id) {
-        t.isCompleted = !t.isCompleted;
-      }
-      return t;
+  const [options, setOptions] = useState(null);
+
+  // Toggle task completion status
+  const changeComplate = () =>
+    dispatch({
+      type: "toggleComplate",
+      payload: { id: todo.id, showHideSnackbar },
     });
-    setTodos(updateTodo);
-    localStorage.setItem("todos", JSON.stringify(updateTodo));
-  };
 
-  const handleDeleteClick = () => {
-    setShowDeleteDialog(true);
-  };
+  // Handle menu opening and closing
+  const handleOpenMenu = (event) => setOptions(event.currentTarget);
+  const handleCloseMenu = () => setOptions(false);
 
-  const showEditClick = () => {
-    setShowEditDialog(true);
-  };
-
-  const handleDeleteDialogClose = () => {
-    setShowDeleteDialog(false);
-  };
-
-  const handleEditDialogClose = () => {
-    setShowEditDialog(false);
-  };
-
-  const handleDeleteConfirm = () => {
-    const deleteTodo = todos.filter((t) => t.id !== todo.id);
-    setTodos(deleteTodo);
-    localStorage.setItem("todos", JSON.stringify(deleteTodo));
-  };
-
-  const handleEditConfirm = () => {
-    const editTodoConfirm = todos.map((t) => {
-      if (t.id === todo.id) {
-        return { ...t, title: editTodo.title, details: editTodo.details };
-      } else {
-        return t;
-      }
+  // Change category of a task
+  const changeCategory = (category) => {
+    dispatch({
+      type: "changeCategory",
+      payload: { id: todo.id, name: category },
     });
-    setTodos(editTodoConfirm);
-    localStorage.setItem("todos", JSON.stringify(editTodoConfirm));
-    setShowEditDialog(false);
+    handleCloseMenu();
   };
+
+  // Generate menu items for categories
+  const categoriesJSX = categories
+    .filter((category) => todo.category !== category)
+    .map((category) => (
+      <div key={category}>
+        <Divider />
+        <MenuItem onClick={() => changeCategory(category)}>
+          <PlaylistAddRoundedIcon sx={{ ml: 1 }} />
+          اضافة الي ( {category} )
+        </MenuItem>
+      </div>
+    ));
 
   return (
-    <>
-      {/* Delete Model */}
-      <Dialog
-        sx={{ textAlign: "right" }}
-        open={showDeleteDialog}
-        onClose={handleDeleteDialogClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title" sx={{ textAlign: "center" }}>
-          هل تريد حذف المهمه ( {todo.title} )
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            لا يمكنك التراجع عن الحذف
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteConfirm}>نعم، قم بالحذف</Button>
-          <Button
-            onClick={handleDeleteDialogClose}
-            variant="contained"
-            autoFocus
-          >
-            إغلاق
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {/* == Delete Model == */}
-
-      <Dialog
-        sx={{ textAlign: "right" }}
-        open={showEditDialog}
-        onClose={handleEditDialogClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title" sx={{ textAlign: "center" }}>
-          تعديل المهمة
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          <TextField
-            value={editTodo.title}
-            onChange={(e) => {
-              setEditTodo({ ...editTodo, title: e.target.value });
-            }}
-            required
-            margin="dense"
-            id="name"
-            name="title"
-            label="العنوان"
-            type="text"
-            fullWidth
-            variant="standard"
-            style={{ textAlign: "right" }}
-            sx={{
-              width: "100%",
-              "& .MuiInputBase-input": {
-                padding: "10px 5px",
+    <Stack sx={{ bgcolor: theme.palette.primary.dark, borderRadius: 3, mt: 2, ".MuiCardContent-root": { p: "12px  !important"}  }}>
+      <CardContent >
+        <Stack direction="row" justifyContent="space-between" gap={2}>
+          {/* Task Title and Details */}
+          <Stack gap={1}>
+            <Typography
+              sx={{
+                fontSize: 20,
                 textAlign: "right",
-              },
-            }}
-          />
-
-          <TextField
-            value={editTodo.details}
-            onChange={(e) => {
-              setEditTodo({ ...editTodo, details: e.target.value });
-            }}
-            required
-            margin="dense"
-            id="name"
-            name="title"
-            label="الوصف"
-            type="text"
-            fullWidth
-            variant="standard"
-            sx={{
-              width: "100%",
-              "& .MuiInputBase-input": {
-                padding: "10px 5px",
-                textAlign: "right",
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleEditDialogClose}>الغاء التعديل</Button>
-          <Button onClick={handleEditConfirm} variant="contained" autoFocus>
-            تأكيد
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {/* Edit Model */}
-
-      {/* == Edit Model == */}
-      <Card
-        sx={{ mt: 3, bgcolor: theme.palette.primary.dark, borderRadius: 3, color: "#fff" }}
-      >
-        <CardContent>
-          <Grid container alignItems="center">
-            <Grid item container xs={8} gap={1} direction="column">
-              <Typography
-                variant="h5"
-                sx={{
-                  textAlign: "right",
-                  fontWeight: "normal",
-                  wordBreak: "break-word",
-                }}
-              >
-                {todo.title}
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  textAlign: "right",
-                  fontWeight: "200",
-                  wordBreak: "break-word",
-                }}
-              >
-                {todo.details}
-              </Typography>
-            </Grid>
-            <Grid
-              item
-              xs={4}
-              display="flex"
-              alignItems="center"
-              justifyContent="space-around"
+                fontWeight: 500,
+                wordBreak: "break-word",
+                color: "#fff",
+              }}
             >
-              {/* Check Icon */}
-              <IconButton
-                onClick={handleCheckClick}
-                style={{
-                  color: todo.isCompleted ? "#fff" : "#8bc34a",
-                  backgroundColor: todo.isCompleted ? "#8bc34a" : "#fff",
-                  border: "3px solid #8bc34a",
-                }}
-              >
-                <CheckRoundedIcon />
-              </IconButton>
-              {/* == Check Icon == */}
-              {/* Edit Icon */}
-              <IconButton
-                onClick={showEditClick}
-                style={{
-                  color: "#009688",
-                  backgroundColor: "#fff",
-                  border: "3px solid #009688",
-                }}
-              >
-                <ModeEditTwoToneIcon />
-              </IconButton>
-              {/* == Edit Icon == */}
+              {todo.title}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: 14,
+                textAlign: "right",
+                fontWeight: 400,
+                wordBreak: "break-word",
+                color: "#fff",
+              }}
+            >
+              {todo.details}
+            </Typography>
+          </Stack>
 
-              {/* Delete Button */}
+          {/* Task Actions */}
+          <Stack justifyContent="space-between" alignItems="end" gap={1}>
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              {/* Menu Button */}
               <IconButton
-                onClick={handleDeleteClick}
+                size="small"
+                onClick={handleOpenMenu}
                 style={{
-                  color: "#ff3939",
-                  backgroundColor: "#fff",
-                  border: "3px solid #ff3939",
+                  color: "#fff",
+                  backgroundColor: theme.palette.primary.light,
                 }}
               >
-                <DeleteOutlineRoundedIcon />
-                {/* == Delete Button == */}
+                <MoreVertRoundedIcon />
               </IconButton>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-    </>
+
+              {/* Toggle Completion Button */}
+              <IconButton
+                size="small"
+                onClick={changeComplate}
+                style={{
+                  color: todo.isCompleted
+                    ? "#fff"
+                    : theme.palette.primary.light,
+                  backgroundColor: todo.isCompleted
+                    ? theme.palette.primary.light
+                    : "#fff",
+                  border: `1px solid ${theme.palette.primary.light}`,
+                }}
+              >
+                <CheckRounded />
+              </IconButton>
+
+              {/* Task Options Menu */}
+              <Menu
+                anchorEl={options}
+                open={Boolean(options)}
+                onClose={handleCloseMenu}
+                elevation={0}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                sx={{
+                  direction: "rtl",
+                  ".MuiPaper-root": {
+                    bgcolor: "#00000029",
+                    backdropFilter: "blur(15px)",
+                    borderRadius: 1.25,
+                    color: "white",
+                    border: `1px solid ${theme.palette.primary.main}`,
+                  },
+                  li: { p: "6px 8px" },
+                  ".MuiDivider-root": { m: 0 },
+                }}
+              >
+                <MenuItem
+                  onClick={() => {
+                    showEdit(todo);
+                    handleCloseMenu();
+                  }}
+                >
+                  <EditRoundedIcon sx={{ ml: 1 }} />
+                  تعديل المهمة
+                </MenuItem>
+                <Divider />
+                <MenuItem
+                  onClick={() => {
+                    showDelete(todo);
+                    handleCloseMenu();
+                  }}
+                >
+                  <DeleteForeverRoundedIcon sx={{ ml: 1 }} />
+                  حذف المهمة
+                </MenuItem>
+                {categoriesJSX}
+                {todo.category && (
+                  <>
+                    <Divider />
+                    <MenuItem onClick={() => changeCategory("")}>
+                      <PlaylistRemoveRoundedIcon sx={{ ml: 1 }} /> ازالة من ({" "}
+                      {todo.category} )
+                    </MenuItem>
+                  </>
+                )}
+              </Menu>
+            </Stack>
+
+            {/* Task Timestamp */}
+            <Typography sx={{ fontSize: 14, fontWeight: 100, color: "#eee" }}>
+              {todo.time}
+            </Typography>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Stack>
   );
 }

@@ -4,14 +4,13 @@
   box-sizing: border-box;
 }
 
+body {
+  transition: background-color 0.5s ease;
+  background-color: var(--bg-color);
+}
+
 .App {
   text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 10px 0;
-  background-color: #121212;
   direction: rtl;
 }
 
@@ -38,24 +37,22 @@
   src: url(/public/fonts/Alexandria-Light.ttf);
   font-weight: 200;
 }
+
 @font-face {
   font-family: Alexandria;
   src: url(/public/fonts/Alexandria-Medium.ttf);
   font-weight: 500;
 }
 
-
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #e0f2f1;
-  border-radius: 10px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00695c;
-  border-radius: 10px;
+  background: #607d8b;
+  border-radius: 2px 0px 0px 2px;
 }
-

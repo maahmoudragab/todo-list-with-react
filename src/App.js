@@ -1,62 +1,101 @@
 import "./App.css";
 
-// From MUI
+// MUI
 import { createTheme, ThemeProvider } from "@mui/material";
 
 // Component
 import TodoList from "./component/TodoList";
 
 // Hooks
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Context
-import { TodosContext } from "./component/contexts/todosContext";
-
-// Others
-import { v4 as uuidv4 } from "uuid";
-
-const theme = createTheme({
-  typography: {
-    fontFamily: ["Alexandria"],
-  },
-  palette: {
-    primary: {
-      main: "#009688",
-      light: "#e0f2f1",
-      dark:"#00695c"
-    }
-  }
-});
-const initTodos = [
-  {
-    id: uuidv4(),
-    title: "قراءه كتاب",
-    details: "sasdafsdfsddf",
-    isCompleted: false,
-  },
-  {
-    id: uuidv4(),
-    title: "قراءه كتاب",
-    details: "محمود false يسطا",
-    isCompleted: false,
-  },
-  {
-    id: uuidv4(),
-    title: "قراءه كتاب",
-    details: "true المهمه دي",
-    isComolated: true,
-  },
-];
+import TodosProvider from "./contexts/todosContext";
+import { SnackbarProvider } from "./contexts/snackbarContext";
 
 function App() {
-  const [todos, setTodos] = useState(initTodos);
+  const [mode, setMode] = useState(localStorage.getItem("mode") || "light");
+
+  useEffect(() => {
+    localStorage.setItem("mode", mode);
+  }, [mode]);
+
+  const theme = createTheme({
+    typography: {
+      fontFamily: ["Alexandria"],
+    },
+    palette: {
+      primary: {
+        main: "#009688",
+        contrastText: "#000",
+      },
+      secondary: {
+        main: "#36d3e0",
+        contrastText: "#000",
+      },
+      background: {
+        default: mode === "light" ? "#e0f2f1" : "#222",
+      },
+    },
+
+    components: {
+      MuiDialog: {
+        styleOverrides: {
+          root: {
+            textAlign: "right",
+          },
+
+          paper: {
+            backgroundColor: "#00000021",
+            backdropFilter: "blur(20px)",
+            borderRadius: "15px",
+            border: `1px solid #009688`,
+          },
+        },
+      },
+      MuiDialogTitle: {
+        styleOverrides: {
+          root: {
+            textAlign: "center",
+            color: "#fff",
+          },
+        },
+      },
+      MuiDialogContent: {
+        styleOverrides: {
+          root: {
+            color: "#fff",
+            padding: "6px 10px",
+          },
+        },
+      },
+      MuiDialogActions: {
+        styleOverrides: {
+          root: {
+            justifyContent: "flex-end",
+          },
+        },
+      },
+    },
+  });
+
+  document.body.style.setProperty(
+    "--bg-color",
+    theme.palette.background.default
+  );
+
   return (
     <ThemeProvider theme={theme}>
-      <div className="App">
-        <TodosContext.Provider value={{ todos, setTodos }}>
-          <TodoList />
-        </TodosContext.Provider>
-      </div>
+      <TodosProvider>
+        <SnackbarProvider>
+          <div
+            className="App"
+            style={{ "--bg-color": theme.palette.primary.light }}
+          >
+            <TodoList mode={mode} setMode={setMode} />
+          </div>
+        </SnackbarProvider>
+      </TodosProvider>
     </ThemeProvider>
   );
 }
