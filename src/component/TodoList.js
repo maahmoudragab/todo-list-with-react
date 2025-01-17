@@ -71,8 +71,8 @@ export default function TodoList({ mode, setMode }) {
   }, [dispatch]);
 
   useEffect(() => {
-    localStorage.setItem("categories", JSON.stringify(categories));
-  }, [categories]);
+    setCategories(JSON.parse(localStorage.getItem("categories"))); // تحميل التصنيفات من localStorage فقط عند التحميل
+  }, []);
 
   const [complatedTodos, notComplatedTodos] = useMemo(() => {
     const complated = todos.filter((t) => t.isCompleted);
@@ -122,13 +122,13 @@ export default function TodoList({ mode, setMode }) {
       type: dialogTodo ? "deleted" : "deleteAll",
       payload: dialogTodo ? { id: dialogTodo.id, showHideSnackbar } : "",
     });
-    
+
     setDialogTodo(null);
     setShowDeleteDialog(false);
     setOpenSettingDialog(false);
     showHideSnackbar(`تم حذف جميع المهام بنجاح`);
   };
-  
+
   // HANDLE EDIT TODO
   const openEditDialog = (todo) => {
     setDialogTodo(todo);
@@ -456,12 +456,12 @@ export default function TodoList({ mode, setMode }) {
             </ToggleButton>
           </ToggleButtonGroup>
 
-          <Divider sx={{ margin: "10px 0", bgcolor: "#3d525d" }} />
+          <Divider sx={{ margin: "10px 0", bgcolor: "#009688" }} />
           <Typography variant="body1">ادارة التصنيفات</Typography>
 
           {categoriesSettingJSX}
 
-          <Divider sx={{ margin: "10px 0", bgcolor: "#3d525d" }} />
+          <Divider sx={{ margin: "10px 0", bgcolor: "#009688" }} />
           <Typography variant="body1">حذف المهام</Typography>
           <Button
             onClick={() => setShowDeleteDialog(true)}

@@ -1,4 +1,4 @@
-import { createContext, useReducer,useEffect, useContext, useState } from "react";
+import { createContext, useReducer, useEffect, useContext, useState } from "react";
 import reducer from "../reducers/todosReducer.js";
 
 const TodosContext = createContext();
@@ -6,16 +6,10 @@ const dispatchContext = createContext();
 
 const TodosProvider = ({ children }) => {
   const [todos, dispatch] = useReducer(reducer, []);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(JSON.parse(localStorage.getItem("categories")) || []);
 
   useEffect(() => {
-    setCategories(JSON.parse(localStorage.getItem("categories")) || []);
-  }, []);
-
-  useEffect(() => {
-    if (categories.length >= 0) {
-      localStorage.setItem("categories", JSON.stringify(categories));
-    }
+    localStorage.setItem("categories", JSON.stringify(categories));
   }, [categories]);
 
   return (

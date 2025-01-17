@@ -60,7 +60,7 @@ export default function Todo({ todo, showDelete, showEdit }) {
     .filter((category) => todo.category !== category)
     .map((category) => (
       <div key={category}>
-        <Divider />
+        <Divider style={{ margin: 0 }} />
         <MenuItem onClick={() => changeCategory(category)}>
           <PlaylistAddRoundedIcon sx={{ ml: 1 }} />
           اضافة الي ( {category} )
@@ -69,8 +69,15 @@ export default function Todo({ todo, showDelete, showEdit }) {
     ));
 
   return (
-    <Stack sx={{ bgcolor: theme.palette.primary.dark, borderRadius: 3, mt: 2, ".MuiCardContent-root": { p: "12px  !important"}  }}>
-      <CardContent >
+    <Stack
+      sx={{
+        bgcolor: theme.palette.primary.dark,
+        borderRadius: 3,
+        mt: 2,
+        ".MuiCardContent-root": { p: "12px  !important" },
+      }}
+    >
+      <CardContent>
         <Stack direction="row" justifyContent="space-between" gap={2}>
           {/* Task Title and Details */}
           <Stack gap={1}>
@@ -139,6 +146,10 @@ export default function Todo({ todo, showDelete, showEdit }) {
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 sx={{
                   direction: "rtl",
+                  ul: {
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                  },
                   ".MuiPaper-root": {
                     bgcolor: "#00000029",
                     backdropFilter: "blur(15px)",
@@ -146,7 +157,6 @@ export default function Todo({ todo, showDelete, showEdit }) {
                     color: "white",
                     border: `1px solid ${theme.palette.primary.main}`,
                   },
-                  li: { p: "6px 8px" },
                   ".MuiDivider-root": { m: 0 },
                 }}
               >
@@ -159,7 +169,7 @@ export default function Todo({ todo, showDelete, showEdit }) {
                   <EditRoundedIcon sx={{ ml: 1 }} />
                   تعديل المهمة
                 </MenuItem>
-                <Divider />
+                <Divider style={{ margin: 0 }} />
                 <MenuItem
                   onClick={() => {
                     showDelete(todo);
@@ -171,13 +181,13 @@ export default function Todo({ todo, showDelete, showEdit }) {
                 </MenuItem>
                 {categoriesJSX}
                 {todo.category && (
-                  <>
-                    <Divider />
+                  <div>
+                    <Divider style={{ margin: 0 }} />
                     <MenuItem onClick={() => changeCategory("")}>
-                      <PlaylistRemoveRoundedIcon sx={{ ml: 1 }} /> ازالة من ({" "}
-                      {todo.category} )
+                      <PlaylistRemoveRoundedIcon sx={{ ml: 1 }} />
+                      إزالة من الفئة : {todo.category}
                     </MenuItem>
-                  </>
+                  </div>
                 )}
               </Menu>
             </Stack>
