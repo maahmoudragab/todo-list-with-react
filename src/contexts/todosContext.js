@@ -6,10 +6,17 @@ const dispatchContext = createContext();
 
 const TodosProvider = ({ children }) => {
   const [todos, dispatch] = useReducer(reducer, []);
-  const [categories, setCategories] = useState(JSON.parse(localStorage.getItem("categories")) || []);
-
+  const [categories, setCategories] = useState([]);
   useEffect(() => {
-    localStorage.setItem("categories", JSON.stringify(categories));
+    if (typeof window !== "undefined") {
+      const storedCategories = JSON.parse(localStorage.getItem("categories")) || [];
+      setCategories(storedCategories);
+    }
+  }, []);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("categories", JSON.stringify(categories));
+    }
   }, [categories]);
 
   return (

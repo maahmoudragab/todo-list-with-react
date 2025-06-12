@@ -67,11 +67,14 @@ export default function TodoList({ mode, setMode }) {
   const [openSettingDialog, setOpenSettingDialog] = useState(false);
 
   useEffect(() => {
-    dispatch({ type: "get" });
-  }, [dispatch]);
+    if (typeof window !== "undefined") {
+      const storedTodos = JSON.parse(localStorage.getItem("todos")) || [];
+      dispatch({ type: "get", payload: storedTodos });
+    }
+  }, []);
 
   useEffect(() => {
-    setCategories(JSON.parse(localStorage.getItem("categories"))); // تحميل التصنيفات من localStorage فقط عند التحميل
+    setCategories(JSON.parse(localStorage.getItem("categories")));
   }, []);
 
   const [complatedTodos, notComplatedTodos] = useMemo(() => {
