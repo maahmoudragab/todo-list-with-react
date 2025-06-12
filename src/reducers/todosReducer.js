@@ -3,7 +3,10 @@ import { v4 as uuidv4 } from "uuid";
 export default function reducer(curruntTodos, action) {
   switch (action.type) {
     case "get": {
-      return JSON.parse(localStorage.getItem("todos")) ?? [];
+      if (typeof window !== "undefined") {
+        return JSON.parse(localStorage.getItem("todos")) ?? [];
+      }
+      return [];
     }
 
     case "added": {
